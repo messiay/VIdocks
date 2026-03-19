@@ -6,7 +6,7 @@ import { pubchemService } from '../../services/pubchemService';
 import { sdfToPdbqt } from '../../utils/sdfConverter';
 import type { DockingResult } from '../../core/types';
 import { apiService } from '../../services/apiService';
-import { Layers, TestTube2, Play, Download, XCircle, CheckCircle, Loader2, AlertTriangle, FileText, Upload, Plus, Trash2, ChevronRight, ChevronDown, Settings } from 'lucide-react';
+import { Layers, TestTube2, Play, Download, XCircle, CheckCircle, Loader2, AlertTriangle, FileText, Upload, Plus, Trash2, ChevronRight, ChevronDown, Settings, Search } from 'lucide-react';
 import { DockingBoxPanel } from './DockingBoxPanel';
 import { VinaOptionsPanel } from './VinaOptionsPanel';
 import { calculateBlindDockingBox } from '../../utils/gridboxCalculator';
@@ -34,7 +34,7 @@ interface BatchJob {
 export function BatchPanel() {
     const { params, setReceptorFile, setLigandFile, setResult, setSelectedPose, selectedPose, result, dockingEngine } = useDockingStore();
     const [showParams, setShowParams] = useState(false);
-    const [useAutoGrid, setUseAutoGrid] = useState(true); // Default to true for safety
+    const [dockingMode, setDockingMode] = useState<'blind' | 'autosite' | 'manual'>('blind'); 
 
     const [receptors, setReceptors] = useState<BatchMolecule[]>([]);
     const [ligands, setLigands] = useState<BatchMolecule[]>([]);
@@ -260,15 +260,44 @@ export function BatchPanel() {
 
             try {
                 // Calculate Params (Dynamic or Static)
-                let jobParams = params;
-                if (useAutoGrid) {
+                let jobParams = { ...params, dockingEngine };
+
+                if (dockingMode === 'blind') {
                     const blindBox = calculateBlindDockingBox(job.receptorContent);
-                    jobParams = {
-                        ...params, // Keep other params like exhaustiveness
-                        dockingEngine: dockingEngine, // Pass selected engine
-                        ...blindBox // Override box
-                    };
+                    jobParams = { ...jobParams, ...blindBox };
+                } else if (dockingMode === 'autosite') {
+                    // 1. Create a temporary session to find pockets
+                    const tempProject = `SiteDetection_${Date.now()}`;
+                    try {
+                        await apiService.createProject(tempProject);
+                        const recFile = new File([job.receptorContent], "receptor.pdbqt", { type: "text/plain" });
+                        await apiService.uploadFile(tempProject, recFile, 'receptor');
+                        
+                        const pockets = await apiService.findPockets(tempProject, "receptor.pdbqt");
+                        if (pockets && pockets.length > 0) {
+                            // Use the best pocket found
+                            const bestPocket = pockets[0].gridbox;
+                            jobParams = {
+                                ...jobParams,
+                                centerX: bestPocket.center_x,
+                                centerY: bestPocket.center_y,
+                                centerZ: bestPocket.center_z,
+                                sizeX: bestPocket.size_x,
+                                sizeY: bestPocket.size_y,
+                                sizeZ: bestPocket.size_z
+                            };
+                        } else {
+                            // Fallback to blind
+                            const blindBox = calculateBlindDockingBox(job.receptorContent);
+                            jobParams = { ...jobParams, ...blindBox };
+                        }
+                    } catch (e) {
+                        console.warn("Autosite failed, falling back to blind:", e);
+                        const blindBox = calculateBlindDockingBox(job.receptorContent);
+                        jobParams = { ...jobParams, ...blindBox };
+                    }
                 }
+                // If manual, jobParams already contains store params
 
                 // RUN DOCKING
                 const result = await vinaService.runDocking(
@@ -471,17 +500,29 @@ export function BatchPanel() {
 
                 {showParams && (
                     <div className="params-content">
-                        <div className="params-grid">
-                            <label className="checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    checked={useAutoGrid}
-                                    onChange={(e) => setUseAutoGrid(e.target.checked)}
-                                />
-                                <span>Auto-Center Grid (Blind Docking per Receptor)</span>
-                            </label>
+                        <div className="docking-mode-selector">
+                            <button 
+                                className={`mode-btn ${dockingMode === 'blind' ? 'active' : ''}`}
+                                onClick={() => setDockingMode('blind')}
+                            >
+                                <Layers size={16} /> Blind
+                            </button>
+                            <button 
+                                className={`mode-btn ${dockingMode === 'autosite' ? 'active' : ''}`}
+                                onClick={() => setDockingMode('autosite')}
+                            >
+                                <Search size={16} /> Autosite
+                            </button>
+                            <button 
+                                className={`mode-btn ${dockingMode === 'manual' ? 'active' : ''}`}
+                                onClick={() => setDockingMode('manual')}
+                            >
+                                <Settings size={16} /> Manual
+                            </button>
+                        </div>
 
-                            {!useAutoGrid && <DockingBoxPanel />}
+                        <div className="params-grid">
+                            {dockingMode === 'manual' && <DockingBoxPanel />}
                             <VinaOptionsPanel />
                         </div>
                     </div>

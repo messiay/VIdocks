@@ -1,12 +1,8 @@
+/* Batch Panel Root */
 .batch-panel {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 24px;
-    width: 100%;
     height: 100%;
-    box-sizing: border-box;
-    color: var(--text-primary);
     overflow: hidden;
 }
 
@@ -31,6 +27,55 @@
     margin: 0 0 0 36px;
     font-size: 0.9rem;
     color: var(--text-secondary);
+}
+
+/* Docking Mode Selector */
+.docking-mode-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid var(--border-divider);
+}
+
+.mode-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.mode-btn.active {
+    background: var(--accent-primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.light-mode .mode-btn.active {
+    color: white;
+}
+
+.params-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 /* Container for Columns */

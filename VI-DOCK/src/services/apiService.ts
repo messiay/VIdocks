@@ -169,5 +169,21 @@ export const apiService = {
         }
 
         return response.json();
+    },
+
+    /**
+     * Find potential binding pockets in a receptor.
+     */
+    async findPockets(projectName: string, receptorFile: string): Promise<any[]> {
+        const response = await fetch(`${config.API_BASE_URL}/analysis/${projectName}/pockets?receptor_file=${receptorFile}`, {
+            method: 'POST'
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || 'Failed to find pockets');
+        }
+
+        return response.json();
     }
 };
