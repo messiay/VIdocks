@@ -1,8 +1,8 @@
-# VI DOCK 🧬
+# VIDocks 🧬
 
 **Browser-Based Molecular Docking Platform**
 
-VI DOCK is a professional molecular docking platform with a beautiful dark/light glassmorphism UI, a powerful 3D molecule viewer, and batch docking capabilities. It features a cloud-ready docking backend utilizing FastAPI, AutoDock Vina, RDKit, and 3Dmol.js.
+VIDocks is a professional molecular docking platform with a beautiful dark/light glassmorphism UI, a powerful 3D molecule viewer, and batch docking capabilities. It features a cloud-ready docking backend utilizing FastAPI, AutoDock Vina, RDKit, and 3Dmol.js.
 
 ---
 

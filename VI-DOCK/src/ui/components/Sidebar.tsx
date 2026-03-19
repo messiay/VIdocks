@@ -73,9 +73,9 @@ export function Sidebar() {
             <div className="sidebar-header">
                 <h1 className="app-logo">
                     <span className="logo-icon">
-                        <img src="/logo.png" alt="Vdock Logo" style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
+                        <img src="/logo.png" alt="VIDocks Logo" style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
                     </span>
-                    <span className="logo-text">Vdock</span>
+                    <span className="logo-text">VIDocks</span>
                 </h1>
                 <p className="app-subtitle">Browser-Based Molecular Docking</p>
             </div>

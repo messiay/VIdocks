@@ -285,7 +285,7 @@ export function MoleculeViewer() {
                 {isReady && !receptorFile && !ligandFile && (
                     <div className={`viewer-overlay viewer-placeholder ${theme}`}>
                         <span className="placeholder-icon"><Dna size={80} strokeWidth={1} /></span>
-                        <p>Vdock 3D Space</p>
+                        <p>VIDocks 3D Space</p>
                     </div>
                 )}
             </div>

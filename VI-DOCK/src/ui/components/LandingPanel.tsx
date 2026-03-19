@@ -12,9 +12,9 @@ export function LandingPanel() {
                 {/* Header */}
                 <div className="landing-header">
                     <div className="logo-badge">
-                        <img src="/logo.png" alt="Vdock Logo" style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
+                        <img src="/logo.png" alt="VIDocks Logo" style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
                     </div>
-                    <h1>Vdock <span className="pro-tag">Pro</span></h1>
+                    <h1>VIDocks <span className="pro-tag">Pro</span></h1>
                     <p className="subtitle">Advanced Browser-Based Molecular Docking System</p>
                 </div>
 
