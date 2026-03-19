@@ -1,9 +1,10 @@
 .molecular-properties {
     background: var(--bg-surface-secondary);
-    border-radius: 16px;
-    padding: 24px;
+    border-radius: 12px;
+    padding: 12px;
     border: 1px solid var(--border-divider);
     box-shadow: var(--shadow-panel);
+    margin-top: 12px;
 }
 
 .properties-header {
@@ -56,18 +57,18 @@
 
 .properties-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
 }
 
 .property-item {
     background: rgba(0, 0, 0, 0.2);
-    padding: 16px;
-    border-radius: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     border: 1px solid var(--glass-border);
 }
 
@@ -80,7 +81,7 @@
 }
 
 .property-value {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--accent-primary);
     font-variant-numeric: tabular-nums;
@@ -94,14 +95,14 @@
 
 .lipinski-section {
     background: rgba(0, 0, 0, 0.15);
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 10px;
+    padding: 12px;
     border: 1px solid var(--glass-border);
 }
 
 .lipinski-section h4 {
-    margin: 0 0 16px 0;
-    font-size: 0.85rem;
+    margin: 0 0 10px 0;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -117,10 +118,10 @@
 .rule {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
     font-weight: 500;
     border: 1px solid transparent;
 }

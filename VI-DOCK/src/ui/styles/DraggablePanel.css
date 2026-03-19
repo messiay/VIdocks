@@ -14,8 +14,7 @@
     flex-direction: column;
     overflow: hidden;
     z-index: 100;
-    transition: box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-    max-height: 90vh;
+    max-height: calc(100vh - 100px);
 }
 
 .draggable-panel:hover {
