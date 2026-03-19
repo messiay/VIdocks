@@ -20,6 +20,12 @@ export function RunningPanel() {
                 </div>
                 <h2>Docking in Progress</h2>
                 <p className="status-text">{statusMessage || 'Please wait...'}</p>
+                {progress === 0 && (
+                    <p className="cold-start-note">
+                        Note: If the server was inactive, it may take 1-2 minutes to "wake up". 
+                        Connecting to computational cluster...
+                    </p>
+                )}
             </div>
 
             <div className="progress-section">

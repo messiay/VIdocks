@@ -25,6 +25,11 @@
             "vina": "../bin/vina.exe",
             "obabel": "C:\\Program Files\\OpenBabel-3.1.1\\obabel.exe",
             "create_no_window": true
+        },
+        "linux": {
+            "vina": "/app/bin/vina",
+            "obabel": "obabel",
+            "create_no_window": false
         }
     },
     "file_formats": {
