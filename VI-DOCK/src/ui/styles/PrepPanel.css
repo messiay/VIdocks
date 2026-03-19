@@ -547,17 +547,24 @@
 .pubchem-result {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
+    gap: 12px; /* Slightly tighter */
 }
 
 .pubchem-result .result-header {
-    padding-bottom: 12px;
+    padding-bottom: 8px;
     border-bottom: 1px solid var(--border-divider);
 }
 
-.pubchem-result .action-btn {
-    margin-top: 8px;
-    width: 100%;
+.result-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.result-actions .action-btn {
+    flex: 1;
+    min-width: 140px;
 }
 
 /* Lipinski Badge */

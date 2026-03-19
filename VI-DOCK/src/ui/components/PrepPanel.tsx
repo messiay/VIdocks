@@ -162,8 +162,18 @@ export function PrepPanel() {
     const handleUsePubchemAsLigand = async () => {
         if (!pubchemResult) return;
 
-        // Backend already converted to PDBQT if possible
         setLigandFile({
+            name: `${pubchemResult.name.replace(/\s+/g, '_')}.pdbqt`,
+            content: pubchemResult.content,
+            format: pubchemResult.format as 'pdbqt' | 'sdf',
+        });
+        setActiveTab('input');
+    };
+
+    const handleUsePubchemAsReceptor = async () => {
+        if (!pubchemResult) return;
+
+        setReceptorFile({
             name: `${pubchemResult.name.replace(/\s+/g, '_')}.pdbqt`,
             content: pubchemResult.content,
             format: pubchemResult.format as 'pdbqt' | 'sdf',
@@ -205,6 +215,21 @@ export function PrepPanel() {
 
         setLigandFile({
             name: `${processedData.canonicalSmiles?.substring(0, 20) || 'ligand'}.pdb`,
+            content: processedData.pdbBlock,
+            format: 'pdb',
+        });
+
+        setActiveTab('input');
+    };
+
+    const handleUseAsReceptor = () => {
+        if (!processedData?.pdbBlock) {
+            setError('No 3D structure available');
+            return;
+        }
+
+        setReceptorFile({
+            name: `${processedData.canonicalSmiles?.substring(0, 20) || 'receptor'}.pdb`,
             content: processedData.pdbBlock,
             format: 'pdb',
         });
@@ -416,9 +441,14 @@ export function PrepPanel() {
                             <MolecularPropertiesDisplay properties={pubchemResult.properties} />
                         )}
 
-                        <button className="action-btn primary" onClick={handleUsePubchemAsLigand}>
-                            <Target size={16} /> PROCEED TO DOCKING ⚡
-                        </button>
+                        <div className="result-actions">
+                            <button className="action-btn primary" onClick={handleUsePubchemAsLigand}>
+                                <Target size={16} /> Use as Ligand
+                            </button>
+                            <button className="action-btn" onClick={handleUsePubchemAsReceptor}>
+                                <Dna size={16} /> Use as Receptor
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
@@ -491,11 +521,17 @@ export function PrepPanel() {
                         {processedData?.pdbBlock && (
                             <div className="actions-card">
                                 <h3>Actions</h3>
-                                <button className="action-btn primary" onClick={handleUseAsLigand}>
-                                    <Target size={16} /> Use as Ligand
-                                </button>
+                                <div className="result-actions">
+                                    <button className="action-btn primary" onClick={handleUseAsLigand}>
+                                        <Target size={16} /> Use as Ligand
+                                    </button>
+                                    <button className="action-btn" onClick={handleUseAsReceptor}>
+                                        <Dna size={16} /> Use as Receptor
+                                    </button>
+                                </div>
                                 <button
                                     className="action-btn secondary"
+                                    style={{ marginTop: '12px', width: '100%' }}
                                     onClick={() => {
                                         const blob = new Blob([processedData.pdbBlock!], { type: 'text/plain' });
                                         const url = URL.createObjectURL(blob);
