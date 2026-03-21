@@ -50,36 +50,44 @@ print("Setting up Localtunnel...")
 import os
 import subprocess
 import time
+import sys
 
-print("\n--- Cleaning up previous runs ---")
-!pkill -f uvicorn
-!pkill -f localtunnel
+def print_flush(text):
+    print(text)
+    sys.stdout.flush()
+
+print_flush("\n--- Cleaning up previous runs ---")
+os.system("pkill -f uvicorn")
+os.system("pkill -f localtunnel")
 time.sleep(2)
 
-print("\nStarting VI DOCK API Server...")
+print_flush("\nStarting VI DOCK API Server on port 8123...")
 # Start uvicorn in the background with nohup and save logs
-os.system("nohup uvicorn api.main:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &")
+os.system("nohup uvicorn api.main:app --host 0.0.0.0 --port 8123 > server.log 2>&1 &")
 
 # Wait for server to be ready
 time.sleep(5)
 
-# Verify server is running
-if os.system("curl -s http://localhost:8000/ > /dev/null") != 0:
-    print("⚠️ SERVER FAILED TO START! Checking logs...")
+# Verify server is running (with a 5 second timeout so it never hangs)
+verify_cmd = "curl -m 5 -s http://localhost:8123/ > /dev/null"
+if os.system(verify_cmd) != 0:
+    print_flush("⚠️ SERVER FAILED TO START! Checking logs...")
     os.system("cat server.log")
 else:
-    print("✅ Server is running locally on port 8000")
+    print_flush("✅ Server is running locally on port 8123")
 
 # === 7. Expose it to the Web ===
-print("\n--- DEPLOYMENT COMPLETE ---")
-print("1. Your 'Password' for the Tunnel link below is your Colab Instance IP.")
-print("2. Run the command below in a NEW cell to see your Tunnel Password:")
-print("   !curl ipv4.icanhazip.com")
-print("3. Click the link provided by 'lt' below.")
+print_flush("\n--- DEPLOYMENT COMPLETE ---")
+print_flush("1. Your 'Password' for the Tunnel link below is your Colab Instance IP.")
+print_flush("2. Run the command below in a NEW cell to see your Tunnel Password:")
+print_flush("   !curl ipv4.icanhazip.com")
+print_flush("3. Click the link provided by 'lt' below.")
+print_flush("\nWaiting for Localtunnel (this can sometimes take 10-30 seconds)...")
 
-# Run localtunnel pointing to our fresh server
-!lt --port 8000
+# Run localtunnel pointing to our fresh server using os.system so it prints directly
+os.system("npx --yes localtunnel --port 8123")
 ```
+
 
 ## 3. How to Connect
 1.  When you run the script, it will print a link (e.g., `https://forty-humans-like.loca.lt`).
