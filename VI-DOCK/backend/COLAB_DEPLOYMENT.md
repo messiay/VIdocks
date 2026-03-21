@@ -42,9 +42,10 @@ print("Downloading Vina and Smina...")
 !wget -q https://github.com/gnina/smina/releases/download/v2020.12.10/smina.static -O bin/smina
 !chmod +x bin/vina bin/smina
 
-# === 5. Setup Network Tunnel (localtunnel) ===
-print("Setting up Localtunnel...")
-!npm install -g localtunnel -q > /dev/null
+# === 5. Setup Network Tunnel (Cloudflare - More Stable) ===
+print("Downloading Cloudflare Tunnel...")
+!wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+!chmod +x cloudflared-linux-amd64
 
 # === 6. Start the API Server ===
 import os
@@ -58,7 +59,7 @@ def print_flush(text):
 
 print_flush("\n--- Cleaning up previous runs ---")
 os.system("pkill -f uvicorn")
-os.system("pkill -f localtunnel")
+os.system("pkill -f cloudflared")
 time.sleep(2)
 
 print_flush("\nStarting VI DOCK API Server on port 8123...")
@@ -78,21 +79,16 @@ else:
 
 # === 7. Expose it to the Web ===
 print_flush("\n--- DEPLOYMENT COMPLETE ---")
-print_flush("1. Your 'Password' for the Tunnel link below is your Colab Instance IP.")
-print_flush("2. Run the command below in a NEW cell to see your Tunnel Password:")
-print_flush("   !curl ipv4.icanhazip.com")
-print_flush("3. Click the link provided by 'lt' below.")
-print_flush("\nWaiting for Localtunnel (this can sometimes take 10-30 seconds)...")
+print_flush("Starting Cloudflare secure tunnel...")
+print_flush("Look for the URL ending in '.trycloudflare.com' below:\n")
 
-# Run localtunnel pointing to our fresh server using os.system so it prints directly
-os.system("npx --yes localtunnel --port 8123")
+# Run Cloudflare pointing to our server
+os.system("./cloudflared-linux-amd64 tunnel --url http://127.0.0.1:8123")
 ```
 
-
 ## 3. How to Connect
-1.  When you run the script, it will print a link (e.g., `https://forty-humans-like.loca.lt`).
-2.  **IP Verification**: If the link asks for a password, run `!curl ipv4.icanhazip.com` in a new Colab cell to get the IP, and paste it in the website.
-3.  **Update Frontend**: Copy the URL and set it as your `VITE_API_BASE_URL` in Vercel or your local `.env` file.
+1.  When you run the script, look for the box that says: `https://[random-words].trycloudflare.com`
+2.  **Update Frontend**: Copy that `.trycloudflare.com` URL and set it as your `VITE_API_BASE_URL` in Vercel or your local `.env` file.
 
 ## ⚠️ Important
 Keep the Colab tab open. If the notebook disconnects, the backend will stop. You can reconnect and run the cell again at any time to get a new URL.
