@@ -47,16 +47,28 @@ print("Setting up Localtunnel...")
 !npm install -g localtunnel -q > /dev/null
 
 # === 6. Start the API Server ===
+import os
 import subprocess
 import time
 
+print("\n--- Cleaning up previous runs ---")
+!pkill -f uvicorn
+!pkill -f localtunnel
+time.sleep(2)
+
 print("\nStarting VI DOCK API Server...")
-# Start uvicorn in the background
-proc = subprocess.Popen(["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"], 
-                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+# Start uvicorn in the background with nohup and save logs
+os.system("nohup uvicorn api.main:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &")
 
 # Wait for server to be ready
 time.sleep(5)
+
+# Verify server is running
+if os.system("curl -s http://localhost:8000/ > /dev/null") != 0:
+    print("⚠️ SERVER FAILED TO START! Checking logs...")
+    os.system("cat server.log")
+else:
+    print("✅ Server is running locally on port 8000")
 
 # === 7. Expose it to the Web ===
 print("\n--- DEPLOYMENT COMPLETE ---")
@@ -65,7 +77,7 @@ print("2. Run the command below in a NEW cell to see your Tunnel Password:")
 print("   !curl ipv4.icanhazip.com")
 print("3. Click the link provided by 'lt' below.")
 
-# Run localtunnel
+# Run localtunnel pointing to our fresh server
 !lt --port 8000
 ```
 
