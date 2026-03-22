@@ -1,4 +1,5 @@
 import { useDockingStore } from '../../store/dockingStore';
+import { useState } from 'react';
 import { saveAs } from 'file-saver';
 import { BarChart4, FileSpreadsheet, FileText } from 'lucide-react';
 import '../../ui/styles/OutputPanel.css';
@@ -72,6 +73,8 @@ export function OutputPanel() {
         }
     };
 
+    const [showLog, setShowLog] = useState(false);
+
     return (
         <div className="output-workspace-panel">
             {/* LEFT PANEL: DATA & CONTROLS */}
@@ -129,11 +132,12 @@ export function OutputPanel() {
                     </table>
                 </div>
 
-                <div className="log-panel collapsed">
-                    <div className="log-header">
+                <div className={`log-panel ${showLog ? 'expanded' : 'collapsed'}`}>
+                    <div className="log-header" onClick={() => setShowLog(!showLog)} style={{ cursor: 'pointer' }}>
                         <h4>Simulation Log</h4>
+                        <span className="toggle-icon">{showLog ? '−' : '+'}</span>
                     </div>
-                    <pre className="log-content">{result.logOutput}</pre>
+                    {showLog && <pre className="log-content">{result.logOutput}</pre>}
                 </div>
             </div>
         </div>
