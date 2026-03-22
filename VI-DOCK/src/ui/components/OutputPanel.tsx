@@ -3,6 +3,26 @@ import { saveAs } from 'file-saver';
 import { BarChart4, FileSpreadsheet, FileText } from 'lucide-react';
 import '../../ui/styles/OutputPanel.css';
 
+/**
+ * Basic PDBQT to PDB converter for frontend usage.
+ * Only keeps ATOM/HETATM/MODEL/ENDMDL lines and strips partial charges.
+ */
+function pdbqtToPdb(pdbqt: string): string {
+    return pdbqt.split('\n')
+        .map(line => {
+            if (line.startsWith('ATOM') || line.startsWith('HETATM')) {
+                // Truncate to column 66 to remove PDBQT-specific charges/types
+                return line.length > 66 ? line.substring(0, 66) : line;
+            }
+            if (line.startsWith('MODEL') || line.startsWith('ENDMDL') || line.startsWith('TER') || line.startsWith('END')) {
+                return line;
+            }
+            return ''; 
+        })
+        .filter(line => line.length > 0)
+        .join('\n');
+}
+
 export function OutputPanel() {
     const { result, selectedPose, setSelectedPose, receptorFile } = useDockingStore();
 
@@ -18,13 +38,20 @@ export function OutputPanel() {
         );
     }
 
-    const handleDownload = (type: 'pdbqt' | 'log' | 'all' | 'csv') => {
+    const handleDownload = (type: 'pdbqt' | 'pdb' | 'log' | 'all' | 'csv') => {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 
         if (type === 'pdbqt' || type === 'all') {
             const combinedContent = (receptorFile?.content ? receptorFile.content + '\n' : '') + result.rawOutput;
             const blob = new Blob([combinedContent], { type: 'text/plain;charset=utf-8' });
             saveAs(blob, `webvina_complex_${timestamp}.pdbqt`);
+        }
+
+        if (type === 'pdb' || type === 'all') {
+            const combinedContent = (receptorFile?.content ? receptorFile.content + '\n' : '') + result.rawOutput;
+            const pdbContent = pdbqtToPdb(combinedContent);
+            const blob = new Blob([pdbContent], { type: 'text/plain;charset=utf-8' });
+            saveAs(blob, `webvina_complex_${timestamp}.pdb`);
         }
 
         if (type === 'log' || type === 'all') {
@@ -55,7 +82,10 @@ export function OutputPanel() {
                             <FileSpreadsheet size={16} /> CSV
                         </button>
                         <button onClick={() => handleDownload('pdbqt')} title="Download Complex PDBQT">
-                            <FileText size={16} /> Complex PDBQT
+                            <FileText size={16} /> PDBQT
+                        </button>
+                        <button onClick={() => handleDownload('pdb')} title="Download Complex PDB">
+                            <FileText size={16} /> PDB
                         </button>
                     </div>
                 </div>

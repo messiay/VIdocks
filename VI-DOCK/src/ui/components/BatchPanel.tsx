@@ -12,6 +12,22 @@ import { VinaOptionsPanel } from './VinaOptionsPanel';
 import { calculateBlindDockingBox } from '../../utils/gridboxCalculator';
 import '../styles/BatchPanel.css';
 
+/** Basic PDBQT to PDB converter */
+function pdbqtToPdb(pdbqt: string): string {
+    return pdbqt.split('\n')
+        .map(line => {
+            if (line.startsWith('ATOM') || line.startsWith('HETATM')) {
+                return line.length > 66 ? line.substring(0, 66) : line;
+            }
+            if (line.startsWith('MODEL') || line.startsWith('ENDMDL') || line.startsWith('TER') || line.startsWith('END')) {
+                return line;
+            }
+            return ''; 
+        })
+        .filter(line => line.length > 0)
+        .join('\n');
+}
+
 interface BatchMolecule {
     id: string;
     name: string;
@@ -349,15 +365,22 @@ export function BatchPanel() {
         a.click();
     };
 
-    const downloadPose = (job: BatchJob, poseIndex: number) => {
+    const downloadPose = (job: BatchJob, poseIndex: number, format: 'pdbqt' | 'pdb' = 'pdbqt') => {
         if (!job.result?.poses[poseIndex]) return;
 
         const pose = job.result.poses[poseIndex];
         const ligandContent = pose.pdbqt;
         const combinedContent = (job.receptorContent ? job.receptorContent + '\n' : '') + ligandContent;
-        const filename = `Complex_${job.ligandName}_${job.receptorName}_mode${pose.mode}.pdbqt`;
+        
+        let finalContent = combinedContent;
+        let filename = `Complex_${job.ligandName}_${job.receptorName}_mode${pose.mode}.pdbqt`;
 
-        const blob = new Blob([combinedContent], { type: 'text/plain' });
+        if (format === 'pdb') {
+            finalContent = pdbqtToPdb(combinedContent);
+            filename = `Complex_${job.ligandName}_${job.receptorName}_mode${pose.mode}.pdb`;
+        }
+
+        const blob = new Blob([finalContent], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -578,12 +601,20 @@ export function BatchPanel() {
 
                                             {/* Download Button for Active Pose */}
                                             {params && job.result === result && (
-                                                <button
-                                                    className="view-3d-btn download-btn"
-                                                    onClick={(e) => { e.stopPropagation(); downloadPose(job, selectedPose); }}
-                                                >
-                                                    <Download size={14} /> Download Complex Pose {job.result.poses[selectedPose]?.mode || 1}
-                                                </button>
+                                                <div className="download-options">
+                                                    <button
+                                                        className="view-3d-btn download-btn"
+                                                        onClick={(e) => { e.stopPropagation(); downloadPose(job, selectedPose, 'pdbqt'); }}
+                                                    >
+                                                        <Download size={14} /> PDBQT
+                                                    </button>
+                                                    <button
+                                                        className="view-3d-btn download-btn"
+                                                        onClick={(e) => { e.stopPropagation(); downloadPose(job, selectedPose, 'pdb'); }}
+                                                    >
+                                                        <Download size={14} /> PDB
+                                                    </button>
+                                                </div>
                                             )}
                                         </div>
 
