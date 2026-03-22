@@ -4,7 +4,7 @@ import { BarChart4, FileSpreadsheet, FileText } from 'lucide-react';
 import '../../ui/styles/OutputPanel.css';
 
 export function OutputPanel() {
-    const { result, selectedPose, setSelectedPose } = useDockingStore();
+    const { result, selectedPose, setSelectedPose, receptorFile } = useDockingStore();
 
     if (!result) {
         return (
@@ -22,8 +22,9 @@ export function OutputPanel() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 
         if (type === 'pdbqt' || type === 'all') {
-            const blob = new Blob([result.rawOutput], { type: 'text/plain;charset=utf-8' });
-            saveAs(blob, `webvina_output_${timestamp}.pdbqt`);
+            const combinedContent = (receptorFile?.content ? receptorFile.content + '\n' : '') + result.rawOutput;
+            const blob = new Blob([combinedContent], { type: 'text/plain;charset=utf-8' });
+            saveAs(blob, `webvina_complex_${timestamp}.pdbqt`);
         }
 
         if (type === 'log' || type === 'all') {
@@ -53,8 +54,8 @@ export function OutputPanel() {
                         <button onClick={() => handleDownload('csv')} title="Export CSV">
                             <FileSpreadsheet size={16} /> CSV
                         </button>
-                        <button onClick={() => handleDownload('pdbqt')} title="Download PDBQT">
-                            <FileText size={16} /> PDBQT
+                        <button onClick={() => handleDownload('pdbqt')} title="Download Complex PDBQT">
+                            <FileText size={16} /> Complex PDBQT
                         </button>
                     </div>
                 </div>

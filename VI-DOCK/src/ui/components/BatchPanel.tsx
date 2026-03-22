@@ -353,10 +353,11 @@ export function BatchPanel() {
         if (!job.result?.poses[poseIndex]) return;
 
         const pose = job.result.poses[poseIndex];
-        const content = pose.pdbqt;
-        const filename = `${job.ligandName}_${job.receptorName}_mode${pose.mode}.pdbqt`;
+        const ligandContent = pose.pdbqt;
+        const combinedContent = (job.receptorContent ? job.receptorContent + '\n' : '') + ligandContent;
+        const filename = `Complex_${job.ligandName}_${job.receptorName}_mode${pose.mode}.pdbqt`;
 
-        const blob = new Blob([content], { type: 'text/plain' });
+        const blob = new Blob([combinedContent], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -581,7 +582,7 @@ export function BatchPanel() {
                                                     className="view-3d-btn download-btn"
                                                     onClick={(e) => { e.stopPropagation(); downloadPose(job, selectedPose); }}
                                                 >
-                                                    <Download size={14} /> Download Pose {job.result.poses[selectedPose]?.mode || 1}
+                                                    <Download size={14} /> Download Complex Pose {job.result.poses[selectedPose]?.mode || 1}
                                                 </button>
                                             )}
                                         </div>
