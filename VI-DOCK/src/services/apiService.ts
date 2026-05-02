@@ -16,12 +16,7 @@ export interface JobStatus {
     };
 }
 
-// These headers are required for Colab/ngrok tunnels to bypass warnings.
-// They are harmless when deploying to Hugging Face Spaces.
-const TUNNEL_HEADERS = {
-    'Bypass-Tunnel-Reminder': 'true',
-    'ngrok-skip-browser-warning': 'true'
-};
+
 
 const BASE_URL = config.API_BASE_URL.replace(/\/$/, '');
 
@@ -30,8 +25,7 @@ export const apiService = {
         const response = await fetch(`${BASE_URL}/projects/`, {
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json',
-                ...TUNNEL_HEADERS 
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ name })
         });
@@ -45,7 +39,7 @@ export const apiService = {
 
         const response = await fetch(`${BASE_URL}/projects/${projectName}/upload?category=${category}`, {
             method: 'POST',
-            headers: { ...TUNNEL_HEADERS },
+            headers: {  },
             body: formData
         });
 
@@ -66,8 +60,7 @@ export const apiService = {
         const response = await fetch(`${BASE_URL}/docking/${projectName}/dock`, {
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json',
-                ...TUNNEL_HEADERS 
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(configData)
         });
@@ -81,7 +74,7 @@ export const apiService = {
 
     async getJobStatus(jobId: string): Promise<JobStatus> {
         const response = await fetch(`${BASE_URL}/docking/jobs/${jobId}`, {
-            headers: { ...TUNNEL_HEADERS }
+            headers: {  }
         });
         if (!response.ok) throw new Error('Failed to check job status');
         return response.json();
@@ -104,8 +97,7 @@ export const apiService = {
         const response = await fetch(`${BASE_URL}/convert/pdb-to-pdbqt`, {
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json',
-                ...TUNNEL_HEADERS 
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 pdb_content: pdbContent,
@@ -129,8 +121,7 @@ export const apiService = {
         const response = await fetch(`${BASE_URL}/convert/sdf-to-pdbqt`, {
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json',
-                ...TUNNEL_HEADERS 
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 sdf_content: sdfContent,
@@ -154,8 +145,7 @@ export const apiService = {
         const response = await fetch(`${BASE_URL}/convert/smiles-to-pdbqt`, {
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json',
-                ...TUNNEL_HEADERS 
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ smiles, name })
         });
@@ -174,7 +164,7 @@ export const apiService = {
      */
     async fetchPdb(pdbId: string): Promise<{ pdb_content: string; title: string }> {
         const response = await fetch(`${BASE_URL}/fetch/pdb/${pdbId}`, {
-            headers: { ...TUNNEL_HEADERS }
+            headers: {  }
         });
 
         if (!response.ok) {
@@ -191,7 +181,7 @@ export const apiService = {
      */
     async fetchPubChem(query: string): Promise<{ sdf_content: string; pdbqt_content: string; name: string }> {
         const response = await fetch(`${BASE_URL}/fetch/pubchem/${encodeURIComponent(query)}?convert_to_pdbqt=true`, {
-            headers: { ...TUNNEL_HEADERS }
+            headers: {  }
         });
 
         if (!response.ok) {
@@ -208,7 +198,7 @@ export const apiService = {
     async findPockets(projectName: string, receptorFile: string): Promise<any[]> {
         const response = await fetch(`${BASE_URL}/analysis/${projectName}/pockets?receptor_file=${receptorFile}`, {
             method: 'POST',
-            headers: { ...TUNNEL_HEADERS }
+            headers: {  }
         });
 
         if (!response.ok) {

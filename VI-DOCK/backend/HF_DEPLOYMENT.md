@@ -34,8 +34,6 @@ Once your space is created, you need to provide the code to run it. The easiest 
    RUN apt-get update && apt-get install -y \
        wget \
        build-essential \
-       libpcre3 \
-       libpcre3-dev \
        openbabel \
        git \
        && rm -rf /var/lib/apt/lists/*
@@ -43,20 +41,18 @@ Once your space is created, you need to provide the code to run it. The easiest 
    # Set up work directory
    WORKDIR /app
 
-   # Clone the specific backend folder directly (for a complete deployment)
-   # Or copy files if using the HF CLI. Assuming we are copying from the repo:
-   RUN git clone https://github.com/messiay/simdock-pro.git /repo && \
+   # Clone the specific backend folder directly
+   RUN git clone https://github.com/messiay/VIdocks.git /repo && \
        cp -r /repo/VI-DOCK/backend/* /app/ && \
        rm -rf /repo
 
    # Install Python requirements
    RUN pip install --no-cache-dir -r requirements.txt
 
-   # Download Linux versions of Vina and Smina
+   # Download Linux version of Vina
    RUN mkdir -p /app/bin && \
        wget https://github.com/ccsb-scripps/AutoDock-Vina/releases/download/v1.2.5/vina_1.2.5_linux_x86_64 -O /app/bin/vina && \
-       wget https://github.com/gnina/smina/releases/download/v2020.12.10/smina.static -O /app/bin/smina && \
-       chmod +x /app/bin/vina /app/bin/smina
+       chmod +x /app/bin/vina
 
    # Set up user for Hugging Face (Running as user ID 1000)
    RUN useradd -m -u 1000 user && \
