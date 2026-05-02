@@ -16,6 +16,8 @@ export interface JobStatus {
     };
 }
 
+// These headers are required for Colab/ngrok tunnels to bypass warnings.
+// They are harmless when deploying to Hugging Face Spaces.
 const TUNNEL_HEADERS = {
     'Bypass-Tunnel-Reminder': 'true',
     'ngrok-skip-browser-warning': 'true'
