@@ -19,5 +19,8 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['3dmol']
+  },
+  build: {
+    chunkSizeWarningLimit: 1000
   }
 })
